@@ -1,7 +1,9 @@
-" Vim plugin that add the entries in a .gitignore file to 'wildignore'
+" Vim plugin that add the entries in .gitignore to 'wildignore'
+"
 " Last Change:	2012 Aug 6
 " Maintainer:	Adam Bellaire
 " Contributors:	Giuseppe Rota
+" Contributors:	Simon Crosland
 " License:	This file is placed in the public domain.
 "
 "                     Fugitive Integration
@@ -61,5 +63,6 @@ augroup wildignorefromgitignore_fugitive
 augroup END
 
 let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim:set ft=vim sw=2 sts=2 et:
