@@ -1,10 +1,10 @@
 " Vim plugin that add the entries in .gitignore to 'wildignore'
 "
-" Last Change:	2018-06-20
-" Maintainer:	Adam Bellaire
-" Contributors:	Giuseppe Rota
-" Contributors:	Simon Crosland
-" License:	This file is placed in the public domain.
+" Last Change:  2018-06-20
+" Maintainer:   Adam Bellaire
+" Contributors: Giuseppe Rota
+" Contributors: Simon Crosland
+" License:      This file is placed in the public domain.
 "
 "                     Fugitive Integration
 " The plugin provides no default mappings but integrates nicely with fugitive
