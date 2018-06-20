@@ -55,17 +55,22 @@ function s:WildignoreFromGitignore(gitignore)
   if !s:ShouldParseFile(a:gitignore)
     return
   endif
-  let igstring = ''
+  let igstrings = []
   for oline in readfile(a:gitignore)
     let line = substitute(oline, '\s|\n|\r', '', "g")
     if line =~ '^#' | con | endif
     if line == ''   | con | endif
     if line =~ '^!' | con | endif
     if line =~ '/$' | let line .= '*' | endif
-    let igstring .= "," . line
+    call add(igstrings, line)
   endfor
-  let execstring = "set wildignore+=".substitute(igstring, '^,', '', "g")
-  execute execstring
+  if len(igstrings) == 0
+    return
+  endif
+  let existing = split(&wildignore, ',')
+  execute "set wildignore+=" . join(filter(igstrings,
+                                         \ 'index(existing, v:val) == -1'),
+                                  \ ',')
 endfunction
 
 function s:WildignoreFromGitDirectory(...)
