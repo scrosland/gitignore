@@ -6,6 +6,11 @@
 " Contributors: Simon Crosland
 " License:      This file is placed in the public domain.
 "
+"                     Global Excludes
+" If a global gitignore file is configured the plugin will load the entries in
+" that file at VimEnter time. The location of the global gitignore file can be
+" configured with the `git config --global core.excludesfile` option.
+"
 "                     Fugitive Integration
 " The plugin provides no default mappings but integrates nicely with fugitive
 " https://github.com/tpope/vim-fugitive. I.e. if you have fugitive installed,
@@ -98,10 +103,10 @@ function s:WildignoreFromGlobalGitignore()
   endif
 endfunction
 
-noremap <unique> <script> <Plug>WildignoreFromGitDirectory <SID>WildignoreFromGitDirectory
+noremap <unique> <script> <Plug>WildignoreFromGitignore <SID>WildignoreFromGitDirectory
 noremap <SID>WildignoreFromGitDirectory :call <SID>WildignoreFromGitDirectory()<CR>
 
-command -nargs=? WildignoreFromGitDirectory :call <SID>WildignoreFromGitDirectory(<q-args>)
+command -nargs=? WildignoreFromGitignore :call <SID>WildignoreFromGitDirectory(<q-args>)
 
 augroup wildignorefromgitignore_fugitive
   autocmd!
