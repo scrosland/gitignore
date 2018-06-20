@@ -1,6 +1,6 @@
 " Vim plugin that add the entries in .gitignore to 'wildignore'
 "
-" Last Change:	2012 Aug 6
+" Last Change:	2018-06-20
 " Maintainer:	Adam Bellaire
 " Contributors:	Giuseppe Rota
 " Contributors:	Simon Crosland
@@ -79,7 +79,23 @@ function s:WildignoreFromGitDirectory(...)
   call s:WildignoreFromGitignore(gitignore)
 endfunction
 
+function s:WildignoreFromFugitive()
+  if exists('b:git_dir')
+    call s:WildignoreFromGitDirectory(fnamemodify(b:git_dir, ':h'))
+  endif
+endfunction
+
+let s:loaded_global_gitignore = 0
+
 function s:WildignoreFromGlobalGitignore()
+  if s:loaded_global_gitignore
+    return
+  endif
+  let s:loaded_global_gitignore = 1
+  let gitignore = system("git config --global list config.excludefile")
+  if strlen(gitignore)
+    call s:WildignoreFromGitignore(gitignore)
+  endif
 endfunction
 
 noremap <unique> <script> <Plug>WildignoreFromGitDirectory <SID>WildignoreFromGitDirectory
@@ -88,8 +104,13 @@ noremap <SID>WildignoreFromGitDirectory :call <SID>WildignoreFromGitDirectory()<
 command -nargs=? WildignoreFromGitDirectory :call <SID>WildignoreFromGitDirectory(<q-args>)
 
 augroup wildignorefromgitignore_fugitive
-    autocmd!
-    autocmd User Fugitive if exists('b:git_dir') | call <SID>WildignoreFromGitDirectory(fnamemodify(b:git_dir, ':h')) | endif
+  autocmd!
+  autocmd User Fugitive call <SID>WildignoreFromFugitive()
+augroup END
+
+augroup wildignorefromgitignore_global
+  autocmd!
+  autocmd VimEnter call <SID>WildignoreFromGlobalGitignore()
 augroup END
 
 let &cpo = s:save_cpo
