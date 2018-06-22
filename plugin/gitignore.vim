@@ -44,7 +44,7 @@ let s:gitignore_files = []
 function s:ShouldParseFile(gitignore)
   " testing if the file has been seen before is cheaper that testing
   " readability, so do them in that order
-  if index(s:gitignore_files, a:gitignore) == -1
+  if index(s:gitignore_files, a:gitignore) != -1
     return 0
   endif
   if !filereadable(a:gitignore)
@@ -60,6 +60,7 @@ function s:WildignoreFromGitignore(gitignore)
   if !s:ShouldParseFile(a:gitignore)
     return
   endif
+  " echomsg 'Parsing ' . a:gitignore . '...'
   let igstrings = []
   for oline in readfile(a:gitignore)
     let line = substitute(oline, '\s|\n|\r', '', "g")
@@ -72,9 +73,12 @@ function s:WildignoreFromGitignore(gitignore)
   if len(igstrings) == 0
     return
   endif
-  let existing = split(&wildignore, ',')
+  let existing = {}
+  for v in split(&wildignore, ',')
+      let existing[v] = 1
+  endfor
   execute "set wildignore+=" . join(filter(igstrings,
-                                         \ 'index(existing, v:val) == -1'),
+                                         \ 'get(existing, v:val) == 0'),
                                   \ ',')
 endfunction
 
@@ -97,8 +101,9 @@ function s:WildignoreFromGlobalGitignore()
     return
   endif
   let s:loaded_global_gitignore = 1
-  let gitignore = system("git config --global list config.excludefile")
-  if strlen(gitignore)
+  let output = system('git config --global --get core.excludesfile')
+  if !v:shell_error && strlen(output)
+    let gitignore = split(output, '\n')[0]
     call s:WildignoreFromGitignore(gitignore)
   endif
 endfunction
@@ -106,7 +111,7 @@ endfunction
 noremap <unique> <script> <Plug>WildignoreFromGitignore <SID>WildignoreFromGitDirectory
 noremap <SID>WildignoreFromGitDirectory :call <SID>WildignoreFromGitDirectory()<CR>
 
-command -nargs=? WildignoreFromGitignore :call <SID>WildignoreFromGitDirectory(<q-args>)
+command -nargs=? -complete=dir WildignoreFromGitignore :call <SID>WildignoreFromGitDirectory(<q-args>)
 
 augroup wildignorefromgitignore_fugitive
   autocmd!
@@ -115,7 +120,7 @@ augroup END
 
 augroup wildignorefromgitignore_global
   autocmd!
-  autocmd VimEnter call <SID>WildignoreFromGlobalGitignore()
+  autocmd VimEnter * call <SID>WildignoreFromGlobalGitignore()
 augroup END
 
 let &cpo = s:save_cpo
