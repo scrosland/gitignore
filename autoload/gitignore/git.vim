@@ -41,7 +41,7 @@ function! s:find_root_in_cache(dirname)
     let root = get(s:git_roots, dirname, '')
     if strlen(root)
       if dirname !=# a:dirname
-        s:git_roots[a:dirname] = root   " augment the cache
+        let s:git_roots[a:dirname] = root   " augment the cache
       endif
       return root
     endif

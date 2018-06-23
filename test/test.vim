@@ -1,3 +1,9 @@
+" Run tests with one of:
+"
+"     vim -c 'source test/test.vim'
+"     vim -S test/test.vim
+"
+
 let s:myroot = expand('<sfile>:p:h:h')
 execute 'set rtp+=' . s:myroot
 
@@ -15,14 +21,22 @@ function! s:do(...)
       let msg = 'PASSED'
       let s:passed += 1
     else
-      let tmsg = type(output) == type(expected) ? '' : ' different types'
-      let msg = 'FAILED (expected "' . expected . '")' . tmsg
+      let tmsg = type(output) == type(expected) ?
+                    \ '' :
+                    \ ', type = ' . type(expected)
+      let msg = 'FAILED (expected "' . expected . '"' . tmsg . ')'
       let s:failed += 1
     endif
     echomsg 'Result: ' . msg
   endif
 endfunction
 
+execute 'cd ' . s:myroot
+echomsg 'Empty buffer, no file => no root'
+call s:do('gitignore#git#root()', '')
+echomsg 'Open README'
+edit README
+call s:do('gitignore#git#root()', s:myroot)
 echomsg 'Open plugin/gitignore.vim'
 edit plugin/gitignore.vim
 call s:do('gitignore#git#root()', s:myroot)
