@@ -14,7 +14,7 @@ function! s:system(abspath, command)
   let cwd = getcwd()
   try
     call s:chdir(a:abspath)
-    let output = system(a:command)
+    silent let output = system(a:command)
   finally
     call s:chdir(a:abspath)
   endtry
@@ -62,7 +62,7 @@ function! s:get_root(dirname)
   if strlen(root)
     return root
   endif
-  let output = s:system(a:dirname, 'git rev-parse --is-inside-working-tree --show-cdup')
+  silent let output = s:system(a:dirname, 'git rev-parse --is-inside-working-tree --show-cdup')
   if v:shell_error != 0 || output =~? '^fatal'
     return ''
   endif
@@ -93,9 +93,10 @@ endfunction
 " Get a git configuration item.
 " Note this only returns a single value, so multi-value items won't work.
 function! gitignore#git#getconf(key)
-  let output = system('git config --global --get ' . a:key)
+  silent let output = system('git config --null --global --get ' . a:key)
   if !v:shell_error && strlen(output)
-    return split(output, '\n')[0]
+    " system() replaces NUL characters in the output with SOH (0x01)
+    return split(output, "\x01")[0]
   endif
   return ''
 endfunction
