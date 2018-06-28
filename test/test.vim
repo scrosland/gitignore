@@ -34,15 +34,18 @@ endfunction
 execute 'cd ' . s:myroot
 echomsg 'Empty buffer, no file => no root'
 call s:do('gitignore#git#root()', '')
+
 echomsg 'Open README'
 edit README
 call s:do('gitignore#git#root()', s:myroot)
+
 echomsg 'Open plugin/gitignore.vim'
 edit plugin/gitignore.vim
 call s:do('gitignore#git#root()', s:myroot)
+
 call s:do('gitignore#git#root_from_cwd()', s:myroot)
 
 echo '===== Full test log ====='
 messages
 echo 'Summary: ' . s:passed . ' passed, ' . s:failed . ' failed.'
-quit
+quitall

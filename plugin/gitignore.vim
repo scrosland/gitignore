@@ -101,9 +101,8 @@ function s:WildignoreFromGlobalGitignore()
     return
   endif
   let s:loaded_global_gitignore = 1
-  let output = system('git config --global --get core.excludesfile')
-  if !v:shell_error && strlen(output)
-    let gitignore = split(output, '\n')[0]
+  let gitignore = gitignore#git#getconf('core.excludesfile')
+  if strlen(gitignore)
     call s:WildignoreFromGitignore(gitignore)
   endif
 endfunction

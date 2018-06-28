@@ -78,12 +78,24 @@ endfunction
 " Return the git root (toplevel) directory related to the current file (%).
 " Also updates the buffer local cache of the current git root.
 function! gitignore#git#root()
-  if exists('b:gitignore_root') && strlen(b:gitignore_root)
+  if exists('b:gitignore_root')
     return b:gitignore_root
   endif
-  return s:get_root(s:abs_directory_of_current_file())
+  let b:gitignore_root = s:get_root(s:abs_directory_of_current_file())
+  return b:gitignore_root
 endfunction
 
+" Return the git root (toplevel) directory related to the cwd.
 function! gitignore#git#root_from_cwd()
   return s:get_root(getcwd())
+endfunction
+
+" Get a git configuration item.
+" Note this only returns a single value, so multi-value items won't work.
+function! gitignore#git#getconf(key)
+  let output = system('git config --global --get ' . a:key)
+  if !v:shell_error && strlen(output)
+    return split(output, '\n')[0]
+  endif
+  return ''
 endfunction
