@@ -6,6 +6,7 @@
 
 let s:myroot = expand('<sfile>:p:h:h')
 execute 'set rtp+=' . s:myroot
+source autoload/gitignore/git.vim 
 
 let s:passed = 0
 let s:failed = 0
@@ -44,6 +45,17 @@ edit plugin/gitignore.vim
 call s:do('gitignore#git#root()', s:myroot)
 
 call s:do('gitignore#git#root_from_cwd()', s:myroot)
+
+echomsg 'Set git config gitignore.test and read it back'
+silent call system('git config --local --add gitignore.test ' . v:version)
+if v:shell_error
+  echoerr('Failed to set test git config option, gitignore.test')
+endif
+call s:do('gitignore#git#getconf("gitignore.test", "--local")', '' . v:version)
+silent call system('git config --local --unset-all gitignore.test')
+if v:shell_error
+  echoerr('Failed to unset test git config option, gitignore.test')
+endif
 
 echo '===== Full test log ====='
 messages

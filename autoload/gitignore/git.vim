@@ -91,9 +91,16 @@ function! gitignore#git#root_from_cwd()
 endfunction
 
 " Get a git configuration item.
+"   key     : the git config key to read.
+"   domain  : the git config file to read. Optional, defaults to '--global'.
 " Note this only returns a single value, so multi-value items won't work.
-function! gitignore#git#getconf(key)
-  silent let output = system('git config --null --global --get ' . a:key)
+let s:domains = [ '', '--global', '--local', '--system' ]
+function! gitignore#git#getconf(key, ...)
+  let l:domain = get(a:, 1, '--global')
+  if index(s:domains, l:domain) == -1
+    throw 'error: getconf() called with unknown git config file, ' . l:domain
+  endif
+  silent let output = system('git config --null ' . l:domain . ' --get ' . a:key)
   if !v:shell_error && strlen(output)
     " system() replaces NUL characters in the output with SOH (0x01)
     return split(output, "\x01")[0]
