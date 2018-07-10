@@ -16,7 +16,7 @@ function! s:system(abspath, command)
     call s:chdir(a:abspath)
     silent let output = system(a:command)
   finally
-    call s:chdir(a:abspath)
+    call s:chdir(l:cwd)
   endtry
   return output
 endfunction
