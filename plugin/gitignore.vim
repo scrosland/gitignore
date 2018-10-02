@@ -39,6 +39,10 @@ let g:loaded_gitignore_wildignore = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+if !executable('git')
+  finish
+endif
+
 let s:gitignore_files = []
 
 function s:ShouldParseFile(gitignore)
