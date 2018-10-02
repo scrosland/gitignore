@@ -36,12 +36,12 @@ if exists("g:loaded_gitignore_wildignore")
 endif
 let g:loaded_gitignore_wildignore = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
-
 if !executable('git')
   finish
 endif
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 let s:gitignore_files = []
 
