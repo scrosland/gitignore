@@ -58,9 +58,15 @@ function! s:get_root(dirname)
   if strlen(a:dirname) == 0
     return ''
   endif
+  if !exists(a:dirname)
+    return ''
+  endif
   let root = s:find_root_in_cache(a:dirname)
   if strlen(root)
     return root
+  endif
+  if !exists(a:dirname) || !isdirectory(a:dirname)
+    return ''
   endif
   silent let output = s:system(a:dirname, 'git rev-parse --is-inside-working-tree --show-cdup')
   if v:shell_error != 0 || output =~? '^fatal'
